@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_website_delivery_holiday_user,website.delivery.holiday user,website.delivery.holiday,base.group_user,r,
+access_website_delivery_holiday_system,website.delivery.holiday system,website.delivery.holiday,base.group_system,crud,
+access_website_delivery_country_extra_user,website.delivery.country.extra user,website.delivery.country.extra,base.group_user,r,
+access_website_delivery_country_extra_system,website.delivery.country.extra system,website.delivery.country.extra,base.group_system,crud,

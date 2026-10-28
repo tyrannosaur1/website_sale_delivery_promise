@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Delivery Promise for the Website',
-    'version': '19.0.1.0.0',
+    'version': '20.0.1.0.0',
     'summary': 'Tell shoppers when the order will arrive, from the cut-off, the '
                'working week, the holidays and the destination country.',
     'description': """
@@ -48,7 +48,7 @@ the right weekday.
     'category': 'Website/Website',
     'depends': ['website_sale', 'stock'],
     'data': [
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
         'views/delivery_views.xml',
         'views/website_views.xml',
         'views/product_views.xml',
@@ -62,6 +62,7 @@ the right weekday.
     },
     'images': [
         'static/description/screenshot_1.png',
+        'static/description/screenshot_2.png',
     ],
     'installable': True,
     'application': False,

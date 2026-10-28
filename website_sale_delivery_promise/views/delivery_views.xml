@@ -5,11 +5,11 @@
         <field name="name">website.delivery.holiday.tree</field>
         <field name="model">website.delivery.holiday</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="date"/>
                 <field name="name"/>
                 <field name="website_id" groups="base.group_system"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -31,11 +31,11 @@
         <field name="name">website.delivery.country.extra.tree</field>
         <field name="model">website.delivery.country.extra</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="country_id"/>
                 <field name="extra_days"/>
                 <field name="website_id" groups="base.group_system"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -56,7 +56,7 @@
     <record id="action_website_delivery_holiday" model="ir.actions.act_window">
         <field name="name">Delivery Holidays</field>
         <field name="res_model">website.delivery.holiday</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Add a day the shop is closed</p>
             <p>Holidays are skipped by the delivery promise of the website they
@@ -67,7 +67,7 @@
     <record id="action_website_delivery_country_extra" model="ir.actions.act_window">
         <field name="name">Delivery Days per Country</field>
         <field name="res_model">website.delivery.country.extra</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Add extra transit days per country</p>
             <p>The extra days are added on top of the preparation time of the

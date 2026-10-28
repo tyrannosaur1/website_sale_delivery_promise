@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Delivery Promise for the Website',
-    'version': '17.0.1.0.0',
+    'version': '18.0.1.0.0',
     'summary': 'Tell shoppers when the order will arrive, from the cut-off, the '
                'working week, the holidays and the destination country.',
     'description': """

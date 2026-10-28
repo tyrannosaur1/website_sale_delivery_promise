@@ -29,17 +29,17 @@
                     </group>
                     <separator string="Holidays"/>
                     <field name="delivery_holiday_ids">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="date"/>
                             <field name="name"/>
-                        </tree>
+                        </list>
                     </field>
                     <separator string="Extra transit days per country"/>
                     <field name="delivery_country_extra_ids">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="country_id"/>
                             <field name="extra_days"/>
-                        </tree>
+                        </list>
                     </field>
                 </page>
             </xpath>

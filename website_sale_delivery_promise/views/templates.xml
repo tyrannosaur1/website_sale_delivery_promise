@@ -11,7 +11,7 @@
          set higher up. -->
     <template id="product_delivery_promise" inherit_id="website_sale.product"
               name="Delivery promise">
-        <xpath expr="//div[@id='product_attributes_simple']" position="after">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="after">
             <div class="o_dps_promise o_dps_product"
                  t-nocache="delivery_promise_product"
                  t-if="product._dps_promise_available()">

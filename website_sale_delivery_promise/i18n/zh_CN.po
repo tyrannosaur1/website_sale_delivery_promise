@@ -1,0 +1,2500 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* website_sale_delivery_promise
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 20.0-20261015\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-28 09:00+0000\n"
+"PO-Revision-Date: 2026-10-28 09:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: website_sale_delivery_promise
+#: model:ir.module.module,description:base.module_website_sale_delivery_promise
+msgid ""
+"\n"
+"Delivery Promise for the Website\n"
+"================================\n"
+"\n"
+"\"Order within 3h 12m, delivered by Fri, 30 Oct\" on the product page, in the cart\n"
+"and at checkout, computed from the shop's own calendar instead of a fixed text.\n"
+"\n"
+"* Daily cut-off per website: an order placed after it is prepared the next\n"
+"  working day, one minute before it is still shipped today.\n"
+"* Working week per website: the days goods are prepared. Saturday and Sunday are\n"
+"  closed by default, and a shop that closes on Friday evening is one tick away.\n"
+"* Holidays: a list of closed days per website, skipped exactly like a weekend,\n"
+"  including chains of consecutive days and a holiday that falls on a Saturday.\n"
+"* Extra transit days per destination country, added on top of the preparation\n"
+"  time of the slowest item in the cart and walked over closed days.\n"
+"* Preparation time per product: a number of working days, 0 for same-day\n"
+"  dispatch, or \"follow the Sales Lead Time\" so the promise never drifts away from\n"
+"  the lead time the rest of the company uses.\n"
+"* The cart promises the date of its slowest line, not the sum of the lines: a\n"
+"  same-day item does not delay a five-day item, and it does not accelerate it.\n"
+"* At checkout the destination country is known, so its extra days are included.\n"
+"  The promise is written on the order as its commitment date when the order is\n"
+"  confirmed and the field is still empty; a date typed by the merchant is never\n"
+"  overwritten.\n"
+"\n"
+"Timezone\n"
+"--------\n"
+"\n"
+"The cut-off is read in the website's own timezone, not in UTC. A shop in UTC+8\n"
+"that compares the cut-off with the server clock sees 07:30 when the shop clock\n"
+"says 15:30, and would promise a date one day too early for every order placed\n"
+"after 16:00 local time. Set the timezone next to the cut-off in the website\n"
+"settings; the default is the company's.\n"
+"\n"
+"The date arithmetic is a pure function of the moment it is given, so the\n"
+"boundary cases (one minute either side of the cut-off, a Friday order, a holiday\n"
+"chain, 31 December) are covered by a table of tests rather than by waiting for\n"
+"the right weekday.\n"
+msgstr ""
+"\n"
+"网站预计送达\n"
+"================================\n"
+"\n"
+"在产品页、购物车和结账页显示“3 小时 12 分钟内下单，10 月 30 日周五送达”，\n"
+"按店铺自己的日历计算，而不是一段固定文字。\n"
+"\n"
+"* 每个网站的每日截单时间：截单之后下的订单在下一个工作日备货，早一分钟\n"
+"  仍然当天发货。\n"
+"* 每个网站的工作周：备货的日子。周六和周日默认休息，周五晚上打烊的店铺\n"
+"  只需勾选一下。\n"
+"* 节假日：每个网站一份停业日期清单，与周末一样被跳过，包括连续的几天\n"
+"  以及落在周六的节假日。\n"
+"* 每个目的地国家的额外运输天数：加在购物车中最慢商品的备货时间之上，\n"
+"  并跨过停业日计算。\n"
+"* 每个产品的备货时间：若干个工作日，0 表示当天发货，也可以选择“跟随\n"
+"  销售交货提前期”，这样预计送达就不会偏离公司其他环节使用的交货提前期。\n"
+"* 购物车承诺的是最慢一行的日期，而不是各行之和：当天发货的商品既不会\n"
+"  拖慢五天发货的商品，也不会让它提前。\n"
+"* 结账时已知目的地国家，因此会包含它的额外天数。订单确认时如果该字段\n"
+"  仍然为空，预计送达日期会写入订单作为承诺日期；商家填写的日期永远不会\n"
+"  被覆盖。\n"
+"\n"
+"时区\n"
+"--------\n"
+"\n"
+"截单时间按网站自己的时区读取，而不是 UTC。UTC+8 的店铺如果用服务器时钟\n"
+"比对截单时间，店铺时钟显示 15:30 时会看到 07:30，当地 16:00 之后下的每一单\n"
+"都会早一天送达。请在网站设置的截单时间旁设置时区；默认为公司的时区。\n"
+"\n"
+"日期计算是给定时刻的纯函数，因此边界情况（截单前后各一分钟、周五下单、\n"
+"连续节假日、12 月 31 日）由一组测试覆盖，而不必等到合适的星期几。\n"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.cart_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.checkout_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.product_delivery_promise
+msgid "<span class=\"o_dps_icon\" role=\"img\" aria-label=\"Delivery\">🚚</span>"
+msgstr "<span class=\"o_dps_icon\" role=\"img\" aria-label=\"配送\">🚚</span>"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website_delivery_holiday__date
+msgid "A day the shop does not prepare or ship orders, whatever the weekday."
+msgstr "店铺不备货也不发货的日期，不受星期几影响。"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.actions.act_window,help:website_sale_delivery_promise.action_website_delivery_holiday
+msgid "Add a day the shop is closed"
+msgstr "添加店铺停业的日期"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.actions.act_window,help:website_sale_delivery_promise.action_website_delivery_country_extra
+msgid "Add extra transit days per country"
+msgstr "按国家添加额外运输天数"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/abidjan
+msgid "Africa/Abidjan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/accra
+msgid "Africa/Accra"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/addis_ababa
+msgid "Africa/Addis_Ababa"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/algiers
+msgid "Africa/Algiers"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/asmara
+msgid "Africa/Asmara"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/bamako
+msgid "Africa/Bamako"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/bangui
+msgid "Africa/Bangui"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/banjul
+msgid "Africa/Banjul"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/bissau
+msgid "Africa/Bissau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/blantyre
+msgid "Africa/Blantyre"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/brazzaville
+msgid "Africa/Brazzaville"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/bujumbura
+msgid "Africa/Bujumbura"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/cairo
+msgid "Africa/Cairo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/casablanca
+msgid "Africa/Casablanca"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/ceuta
+msgid "Africa/Ceuta"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/conakry
+msgid "Africa/Conakry"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/dakar
+msgid "Africa/Dakar"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/dar_es_salaam
+msgid "Africa/Dar_es_Salaam"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/djibouti
+msgid "Africa/Djibouti"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/douala
+msgid "Africa/Douala"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/el_aaiun
+msgid "Africa/El_Aaiun"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/freetown
+msgid "Africa/Freetown"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/gaborone
+msgid "Africa/Gaborone"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/harare
+msgid "Africa/Harare"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/johannesburg
+msgid "Africa/Johannesburg"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/juba
+msgid "Africa/Juba"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/kampala
+msgid "Africa/Kampala"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/khartoum
+msgid "Africa/Khartoum"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/kigali
+msgid "Africa/Kigali"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/kinshasa
+msgid "Africa/Kinshasa"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/lagos
+msgid "Africa/Lagos"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/libreville
+msgid "Africa/Libreville"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/lome
+msgid "Africa/Lome"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/luanda
+msgid "Africa/Luanda"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/lubumbashi
+msgid "Africa/Lubumbashi"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/lusaka
+msgid "Africa/Lusaka"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/malabo
+msgid "Africa/Malabo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/maputo
+msgid "Africa/Maputo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/maseru
+msgid "Africa/Maseru"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/mbabane
+msgid "Africa/Mbabane"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/mogadishu
+msgid "Africa/Mogadishu"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/monrovia
+msgid "Africa/Monrovia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/nairobi
+msgid "Africa/Nairobi"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/ndjamena
+msgid "Africa/Ndjamena"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/niamey
+msgid "Africa/Niamey"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/nouakchott
+msgid "Africa/Nouakchott"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/ouagadougou
+msgid "Africa/Ouagadougou"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/porto-novo
+msgid "Africa/Porto-Novo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/sao_tome
+msgid "Africa/Sao_Tome"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/tripoli
+msgid "Africa/Tripoli"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/tunis
+msgid "Africa/Tunis"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__africa/windhoek
+msgid "Africa/Windhoek"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/adak
+msgid "America/Adak"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/anchorage
+msgid "America/Anchorage"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/anguilla
+msgid "America/Anguilla"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/antigua
+msgid "America/Antigua"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/araguaina
+msgid "America/Araguaina"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/buenos_aires
+msgid "America/Argentina/Buenos_Aires"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/catamarca
+msgid "America/Argentina/Catamarca"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/cordoba
+msgid "America/Argentina/Cordoba"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/jujuy
+msgid "America/Argentina/Jujuy"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/la_rioja
+msgid "America/Argentina/La_Rioja"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/mendoza
+msgid "America/Argentina/Mendoza"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/rio_gallegos
+msgid "America/Argentina/Rio_Gallegos"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/salta
+msgid "America/Argentina/Salta"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/san_juan
+msgid "America/Argentina/San_Juan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/san_luis
+msgid "America/Argentina/San_Luis"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/tucuman
+msgid "America/Argentina/Tucuman"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/argentina/ushuaia
+msgid "America/Argentina/Ushuaia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/aruba
+msgid "America/Aruba"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/asuncion
+msgid "America/Asuncion"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/atikokan
+msgid "America/Atikokan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/bahia
+msgid "America/Bahia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/bahia_banderas
+msgid "America/Bahia_Banderas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/barbados
+msgid "America/Barbados"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/belem
+msgid "America/Belem"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/belize
+msgid "America/Belize"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/blanc-sablon
+msgid "America/Blanc-Sablon"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/boa_vista
+msgid "America/Boa_Vista"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/bogota
+msgid "America/Bogota"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/boise
+msgid "America/Boise"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/cambridge_bay
+msgid "America/Cambridge_Bay"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/campo_grande
+msgid "America/Campo_Grande"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/cancun
+msgid "America/Cancun"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/caracas
+msgid "America/Caracas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/cayenne
+msgid "America/Cayenne"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/cayman
+msgid "America/Cayman"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/chicago
+msgid "America/Chicago"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/chihuahua
+msgid "America/Chihuahua"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/ciudad_juarez
+msgid "America/Ciudad_Juarez"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/costa_rica
+msgid "America/Costa_Rica"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/coyhaique
+msgid "America/Coyhaique"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/creston
+msgid "America/Creston"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/cuiaba
+msgid "America/Cuiaba"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/curacao
+msgid "America/Curacao"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/danmarkshavn
+msgid "America/Danmarkshavn"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/dawson
+msgid "America/Dawson"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/dawson_creek
+msgid "America/Dawson_Creek"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/denver
+msgid "America/Denver"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/detroit
+msgid "America/Detroit"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/dominica
+msgid "America/Dominica"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/edmonton
+msgid "America/Edmonton"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/eirunepe
+msgid "America/Eirunepe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/el_salvador
+msgid "America/El_Salvador"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/fort_nelson
+msgid "America/Fort_Nelson"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/fortaleza
+msgid "America/Fortaleza"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/glace_bay
+msgid "America/Glace_Bay"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/goose_bay
+msgid "America/Goose_Bay"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/grand_turk
+msgid "America/Grand_Turk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/grenada
+msgid "America/Grenada"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/guadeloupe
+msgid "America/Guadeloupe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/guatemala
+msgid "America/Guatemala"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/guayaquil
+msgid "America/Guayaquil"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/guyana
+msgid "America/Guyana"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/halifax
+msgid "America/Halifax"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/havana
+msgid "America/Havana"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/hermosillo
+msgid "America/Hermosillo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/indianapolis
+msgid "America/Indiana/Indianapolis"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/knox
+msgid "America/Indiana/Knox"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/marengo
+msgid "America/Indiana/Marengo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/petersburg
+msgid "America/Indiana/Petersburg"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/tell_city
+msgid "America/Indiana/Tell_City"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/vevay
+msgid "America/Indiana/Vevay"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/vincennes
+msgid "America/Indiana/Vincennes"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/indiana/winamac
+msgid "America/Indiana/Winamac"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/inuvik
+msgid "America/Inuvik"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/iqaluit
+msgid "America/Iqaluit"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/jamaica
+msgid "America/Jamaica"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/juneau
+msgid "America/Juneau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/kentucky/louisville
+msgid "America/Kentucky/Louisville"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/kentucky/monticello
+msgid "America/Kentucky/Monticello"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/kralendijk
+msgid "America/Kralendijk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/la_paz
+msgid "America/La_Paz"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/lima
+msgid "America/Lima"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/los_angeles
+msgid "America/Los_Angeles"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/lower_princes
+msgid "America/Lower_Princes"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/maceio
+msgid "America/Maceio"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/managua
+msgid "America/Managua"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/manaus
+msgid "America/Manaus"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/marigot
+msgid "America/Marigot"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/martinique
+msgid "America/Martinique"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/matamoros
+msgid "America/Matamoros"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/mazatlan
+msgid "America/Mazatlan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/menominee
+msgid "America/Menominee"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/merida
+msgid "America/Merida"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/metlakatla
+msgid "America/Metlakatla"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/mexico_city
+msgid "America/Mexico_City"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/miquelon
+msgid "America/Miquelon"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/moncton
+msgid "America/Moncton"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/monterrey
+msgid "America/Monterrey"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/montevideo
+msgid "America/Montevideo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/montserrat
+msgid "America/Montserrat"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/nassau
+msgid "America/Nassau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/new_york
+msgid "America/New_York"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/nome
+msgid "America/Nome"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/noronha
+msgid "America/Noronha"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/north_dakota/beulah
+msgid "America/North_Dakota/Beulah"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/north_dakota/center
+msgid "America/North_Dakota/Center"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/north_dakota/new_salem
+msgid "America/North_Dakota/New_Salem"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/nuuk
+msgid "America/Nuuk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/ojinaga
+msgid "America/Ojinaga"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/panama
+msgid "America/Panama"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/paramaribo
+msgid "America/Paramaribo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/phoenix
+msgid "America/Phoenix"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/port-au-prince
+msgid "America/Port-au-Prince"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/port_of_spain
+msgid "America/Port_of_Spain"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/porto_velho
+msgid "America/Porto_Velho"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/puerto_rico
+msgid "America/Puerto_Rico"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/punta_arenas
+msgid "America/Punta_Arenas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/rankin_inlet
+msgid "America/Rankin_Inlet"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/recife
+msgid "America/Recife"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/regina
+msgid "America/Regina"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/resolute
+msgid "America/Resolute"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/rio_branco
+msgid "America/Rio_Branco"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/santarem
+msgid "America/Santarem"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/santiago
+msgid "America/Santiago"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/santo_domingo
+msgid "America/Santo_Domingo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/sao_paulo
+msgid "America/Sao_Paulo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/scoresbysund
+msgid "America/Scoresbysund"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/sitka
+msgid "America/Sitka"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_barthelemy
+msgid "America/St_Barthelemy"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_johns
+msgid "America/St_Johns"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_kitts
+msgid "America/St_Kitts"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_lucia
+msgid "America/St_Lucia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_thomas
+msgid "America/St_Thomas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/st_vincent
+msgid "America/St_Vincent"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/swift_current
+msgid "America/Swift_Current"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/tegucigalpa
+msgid "America/Tegucigalpa"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/thule
+msgid "America/Thule"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/tijuana
+msgid "America/Tijuana"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/toronto
+msgid "America/Toronto"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/tortola
+msgid "America/Tortola"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/vancouver
+msgid "America/Vancouver"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/whitehorse
+msgid "America/Whitehorse"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/winnipeg
+msgid "America/Winnipeg"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__america/yakutat
+msgid "America/Yakutat"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/casey
+msgid "Antarctica/Casey"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/davis
+msgid "Antarctica/Davis"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/dumontdurville
+msgid "Antarctica/DumontDUrville"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/macquarie
+msgid "Antarctica/Macquarie"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/mawson
+msgid "Antarctica/Mawson"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/mcmurdo
+msgid "Antarctica/McMurdo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/palmer
+msgid "Antarctica/Palmer"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/rothera
+msgid "Antarctica/Rothera"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/syowa
+msgid "Antarctica/Syowa"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/troll
+msgid "Antarctica/Troll"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__antarctica/vostok
+msgid "Antarctica/Vostok"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__arctic/longyearbyen
+msgid "Arctic/Longyearbyen"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/aden
+msgid "Asia/Aden"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/almaty
+msgid "Asia/Almaty"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/amman
+msgid "Asia/Amman"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/anadyr
+msgid "Asia/Anadyr"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/aqtau
+msgid "Asia/Aqtau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/aqtobe
+msgid "Asia/Aqtobe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/ashgabat
+msgid "Asia/Ashgabat"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/atyrau
+msgid "Asia/Atyrau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/baghdad
+msgid "Asia/Baghdad"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/bahrain
+msgid "Asia/Bahrain"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/baku
+msgid "Asia/Baku"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/bangkok
+msgid "Asia/Bangkok"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/barnaul
+msgid "Asia/Barnaul"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/beirut
+msgid "Asia/Beirut"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/bishkek
+msgid "Asia/Bishkek"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/chita
+msgid "Asia/Chita"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/colombo
+msgid "Asia/Colombo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/damascus
+msgid "Asia/Damascus"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/dhaka
+msgid "Asia/Dhaka"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/dili
+msgid "Asia/Dili"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/dubai
+msgid "Asia/Dubai"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/dushanbe
+msgid "Asia/Dushanbe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/famagusta
+msgid "Asia/Famagusta"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/gaza
+msgid "Asia/Gaza"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/hebron
+msgid "Asia/Hebron"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/ho_chi_minh
+msgid "Asia/Ho_Chi_Minh"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/hong_kong
+msgid "Asia/Hong_Kong"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/hovd
+msgid "Asia/Hovd"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/irkutsk
+msgid "Asia/Irkutsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/jakarta
+msgid "Asia/Jakarta"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/jayapura
+msgid "Asia/Jayapura"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/jerusalem
+msgid "Asia/Jerusalem"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kabul
+msgid "Asia/Kabul"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kamchatka
+msgid "Asia/Kamchatka"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/karachi
+msgid "Asia/Karachi"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kathmandu
+msgid "Asia/Kathmandu"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/khandyga
+msgid "Asia/Khandyga"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kolkata
+msgid "Asia/Kolkata"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/krasnoyarsk
+msgid "Asia/Krasnoyarsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kuala_lumpur
+msgid "Asia/Kuala_Lumpur"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kuching
+msgid "Asia/Kuching"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/kuwait
+msgid "Asia/Kuwait"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/macau
+msgid "Asia/Macau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/magadan
+msgid "Asia/Magadan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/makassar
+msgid "Asia/Makassar"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/manila
+msgid "Asia/Manila"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/muscat
+msgid "Asia/Muscat"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/nicosia
+msgid "Asia/Nicosia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/novokuznetsk
+msgid "Asia/Novokuznetsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/novosibirsk
+msgid "Asia/Novosibirsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/omsk
+msgid "Asia/Omsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/oral
+msgid "Asia/Oral"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/phnom_penh
+msgid "Asia/Phnom_Penh"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/pontianak
+msgid "Asia/Pontianak"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/pyongyang
+msgid "Asia/Pyongyang"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/qatar
+msgid "Asia/Qatar"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/qostanay
+msgid "Asia/Qostanay"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/qyzylorda
+msgid "Asia/Qyzylorda"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/riyadh
+msgid "Asia/Riyadh"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/sakhalin
+msgid "Asia/Sakhalin"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/samarkand
+msgid "Asia/Samarkand"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/seoul
+msgid "Asia/Seoul"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/shanghai
+msgid "Asia/Shanghai"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/singapore
+msgid "Asia/Singapore"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/srednekolymsk
+msgid "Asia/Srednekolymsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/taipei
+msgid "Asia/Taipei"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/tashkent
+msgid "Asia/Tashkent"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/tbilisi
+msgid "Asia/Tbilisi"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/tehran
+msgid "Asia/Tehran"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/thimphu
+msgid "Asia/Thimphu"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/tokyo
+msgid "Asia/Tokyo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/tomsk
+msgid "Asia/Tomsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/ulaanbaatar
+msgid "Asia/Ulaanbaatar"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/urumqi
+msgid "Asia/Urumqi"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/ust-nera
+msgid "Asia/Ust-Nera"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/vientiane
+msgid "Asia/Vientiane"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/vladivostok
+msgid "Asia/Vladivostok"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/yakutsk
+msgid "Asia/Yakutsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/yangon
+msgid "Asia/Yangon"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/yekaterinburg
+msgid "Asia/Yekaterinburg"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__asia/yerevan
+msgid "Asia/Yerevan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/azores
+msgid "Atlantic/Azores"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/bermuda
+msgid "Atlantic/Bermuda"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/canary
+msgid "Atlantic/Canary"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/cape_verde
+msgid "Atlantic/Cape_Verde"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/faroe
+msgid "Atlantic/Faroe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/madeira
+msgid "Atlantic/Madeira"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/reykjavik
+msgid "Atlantic/Reykjavik"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/south_georgia
+msgid "Atlantic/South_Georgia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/st_helena
+msgid "Atlantic/St_Helena"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__atlantic/stanley
+msgid "Atlantic/Stanley"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/adelaide
+msgid "Australia/Adelaide"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/brisbane
+msgid "Australia/Brisbane"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/broken_hill
+msgid "Australia/Broken_Hill"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/darwin
+msgid "Australia/Darwin"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/eucla
+msgid "Australia/Eucla"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/hobart
+msgid "Australia/Hobart"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/lindeman
+msgid "Australia/Lindeman"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/lord_howe
+msgid "Australia/Lord_Howe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/melbourne
+msgid "Australia/Melbourne"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/perth
+msgid "Australia/Perth"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__australia/sydney
+msgid "Australia/Sydney"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__country_id
+msgid "Country"
+msgstr "国家"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__create_uid
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__create_uid
+msgid "Created by"
+msgstr "创建人"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__create_date
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__create_date
+msgid "Created on"
+msgstr "创建时间"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_cutoff_hour
+msgid "Daily cut-off (hour)"
+msgstr "每日截单时间（小时）"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__date
+msgid "Date"
+msgstr "日期"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.view_website_form_delivery_promise
+msgid "Days orders are prepared"
+msgstr "备货的工作日"
+
+#. module: website_sale_delivery_promise
+#: model:ir.actions.act_window,name:website_sale_delivery_promise.action_website_delivery_country_extra
+#: model:ir.ui.menu,name:website_sale_delivery_promise.menu_website_delivery_country_extra
+msgid "Delivery Days per Country"
+msgstr "按国家的配送天数"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model,name:website_sale_delivery_promise.model_website_delivery_country_extra
+msgid "Delivery Extra Days per Country"
+msgstr "按国家设置的额外配送天数"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model,name:website_sale_delivery_promise.model_website_delivery_holiday
+msgid "Delivery Holiday"
+msgstr "配送节假日"
+
+#. module: website_sale_delivery_promise
+#: model:ir.actions.act_window,name:website_sale_delivery_promise.action_website_delivery_holiday
+#: model:ir.ui.menu,name:website_sale_delivery_promise.menu_website_delivery_holiday
+msgid "Delivery Holidays"
+msgstr "配送节假日"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.view_website_form_delivery_promise
+msgid "Delivery Promise"
+msgstr "预计送达"
+
+#. module: website_sale_delivery_promise
+#: model:ir.module.module,shortdesc:base.module_website_sale_delivery_promise
+msgid "Delivery Promise for the Website"
+msgstr "网站预计送达"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website_delivery_country_extra__country_id
+msgid "Destination country the extra transit days apply to."
+msgstr "额外运输天数适用的目的地国家。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website__delivery_promise_enabled
+msgid ""
+"Display \"Order within ..., delivered by ...\" on the product page, in the "
+"cart and at checkout."
+msgstr ""
+"在产品页、购物车和结账时显示\n"
+"“在……内下单，预计……送达”。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_product_template__display_name
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_sale_order__display_name
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__display_name
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__display_name
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/amsterdam
+msgid "Europe/Amsterdam"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/andorra
+msgid "Europe/Andorra"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/astrakhan
+msgid "Europe/Astrakhan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/athens
+msgid "Europe/Athens"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/belgrade
+msgid "Europe/Belgrade"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/berlin
+msgid "Europe/Berlin"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/bratislava
+msgid "Europe/Bratislava"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/brussels
+msgid "Europe/Brussels"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/bucharest
+msgid "Europe/Bucharest"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/budapest
+msgid "Europe/Budapest"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/busingen
+msgid "Europe/Busingen"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/chisinau
+msgid "Europe/Chisinau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/copenhagen
+msgid "Europe/Copenhagen"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/dublin
+msgid "Europe/Dublin"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/gibraltar
+msgid "Europe/Gibraltar"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/guernsey
+msgid "Europe/Guernsey"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/helsinki
+msgid "Europe/Helsinki"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/isle_of_man
+msgid "Europe/Isle_of_Man"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/istanbul
+msgid "Europe/Istanbul"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/jersey
+msgid "Europe/Jersey"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/kaliningrad
+msgid "Europe/Kaliningrad"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/kirov
+msgid "Europe/Kirov"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/kyiv
+msgid "Europe/Kyiv"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/lisbon
+msgid "Europe/Lisbon"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/ljubljana
+msgid "Europe/Ljubljana"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/london
+msgid "Europe/London"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/luxembourg
+msgid "Europe/Luxembourg"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/madrid
+msgid "Europe/Madrid"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/malta
+msgid "Europe/Malta"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/mariehamn
+msgid "Europe/Mariehamn"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/minsk
+msgid "Europe/Minsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/monaco
+msgid "Europe/Monaco"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/moscow
+msgid "Europe/Moscow"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/oslo
+msgid "Europe/Oslo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/paris
+msgid "Europe/Paris"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/podgorica
+msgid "Europe/Podgorica"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/prague
+msgid "Europe/Prague"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/riga
+msgid "Europe/Riga"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/rome
+msgid "Europe/Rome"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/samara
+msgid "Europe/Samara"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/san_marino
+msgid "Europe/San_Marino"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/sarajevo
+msgid "Europe/Sarajevo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/saratov
+msgid "Europe/Saratov"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/simferopol
+msgid "Europe/Simferopol"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/skopje
+msgid "Europe/Skopje"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/sofia
+msgid "Europe/Sofia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/stockholm
+msgid "Europe/Stockholm"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/tallinn
+msgid "Europe/Tallinn"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/tirane
+msgid "Europe/Tirane"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/ulyanovsk
+msgid "Europe/Ulyanovsk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/vaduz
+msgid "Europe/Vaduz"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/vatican
+msgid "Europe/Vatican"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/vienna
+msgid "Europe/Vienna"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/vilnius
+msgid "Europe/Vilnius"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/volgograd
+msgid "Europe/Volgograd"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/warsaw
+msgid "Europe/Warsaw"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/zagreb
+msgid "Europe/Zagreb"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__europe/zurich
+msgid "Europe/Zurich"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__extra_days
+msgid "Extra days"
+msgstr "额外天数"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_country_extra_ids
+msgid "Extra days per country"
+msgstr "按国家设置的额外天数"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.view_website_form_delivery_promise
+msgid "Extra transit days per country"
+msgstr "按国家设置的额外运输天数"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_fri
+msgid "Friday"
+msgstr "星期五"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__gmt
+msgid "GMT"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_holiday_ids
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.view_website_form_delivery_promise
+msgid "Holidays"
+msgstr "节假日"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.actions.act_window,help:website_sale_delivery_promise.action_website_delivery_holiday
+msgid ""
+"Holidays are skipped by the delivery promise of the website they\n"
+"               belong to, exactly like a Sunday is."
+msgstr ""
+"所属网站的预计送达会跳过节假日，\n"
+"               与周日完全一样。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website__delivery_cutoff_hour
+msgid ""
+"Hour of the day, in the timezone below, after which an order is prepared the"
+" next working day. 14.5 means 14:30. Set 24 to remove the cut-off entirely."
+msgstr ""
+"一天中的某个时刻（时区见下方），晚于该时刻下的订单将在下一个工作日\n"
+"备货。14.5 表示 14:30。设为 24 可完全取消截单时间。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_product_template__id
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_sale_order__id
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__id
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__id
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__id
+msgid "ID"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/antananarivo
+msgid "Indian/Antananarivo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/chagos
+msgid "Indian/Chagos"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/christmas
+msgid "Indian/Christmas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/cocos
+msgid "Indian/Cocos"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/comoro
+msgid "Indian/Comoro"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/kerguelen
+msgid "Indian/Kerguelen"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/mahe
+msgid "Indian/Mahe"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/maldives
+msgid "Indian/Maldives"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/mauritius
+msgid "Indian/Mauritius"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/mayotte
+msgid "Indian/Mayotte"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__indian/reunion
+msgid "Indian/Reunion"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__write_uid
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__write_uid
+msgid "Last Updated by"
+msgstr "最后更新人"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__write_date
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__write_date
+msgid "Last Updated on"
+msgstr "最后更新时间"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_mon
+msgid "Monday"
+msgstr "星期一"
+
+#. module: website_sale_delivery_promise
+#. odoo-python
+#: code:addons/website_sale_delivery_promise/models/website.py:0
+msgid "Order now, delivered by %(date)s"
+msgstr "立即下单，预计 %(date)s 送达"
+
+#. module: website_sale_delivery_promise
+#. odoo-python
+#: code:addons/website_sale_delivery_promise/models/website.py:0
+msgid "Order within %(left)s, delivered by %(date)s"
+msgstr "在 %(left)s 内下单，预计 %(date)s 送达"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/apia
+msgid "Pacific/Apia"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/auckland
+msgid "Pacific/Auckland"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/bougainville
+msgid "Pacific/Bougainville"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/chatham
+msgid "Pacific/Chatham"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/chuuk
+msgid "Pacific/Chuuk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/easter
+msgid "Pacific/Easter"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/efate
+msgid "Pacific/Efate"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/fakaofo
+msgid "Pacific/Fakaofo"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/fiji
+msgid "Pacific/Fiji"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/funafuti
+msgid "Pacific/Funafuti"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/galapagos
+msgid "Pacific/Galapagos"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/gambier
+msgid "Pacific/Gambier"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/guadalcanal
+msgid "Pacific/Guadalcanal"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/guam
+msgid "Pacific/Guam"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/honolulu
+msgid "Pacific/Honolulu"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/kanton
+msgid "Pacific/Kanton"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/kiritimati
+msgid "Pacific/Kiritimati"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/kosrae
+msgid "Pacific/Kosrae"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/kwajalein
+msgid "Pacific/Kwajalein"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/majuro
+msgid "Pacific/Majuro"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/marquesas
+msgid "Pacific/Marquesas"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/midway
+msgid "Pacific/Midway"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/nauru
+msgid "Pacific/Nauru"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/niue
+msgid "Pacific/Niue"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/norfolk
+msgid "Pacific/Norfolk"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/noumea
+msgid "Pacific/Noumea"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/pago_pago
+msgid "Pacific/Pago_Pago"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/palau
+msgid "Pacific/Palau"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/pitcairn
+msgid "Pacific/Pitcairn"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/pohnpei
+msgid "Pacific/Pohnpei"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/port_moresby
+msgid "Pacific/Port_Moresby"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/rarotonga
+msgid "Pacific/Rarotonga"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/saipan
+msgid "Pacific/Saipan"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/tahiti
+msgid "Pacific/Tahiti"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/tarawa
+msgid "Pacific/Tarawa"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/tongatapu
+msgid "Pacific/Tongatapu"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/wake
+msgid "Pacific/Wake"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__pacific/wallis
+msgid "Pacific/Wallis"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model,name:website_sale_delivery_promise.model_product_template
+msgid "Product"
+msgstr "产品"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_promise.view_website_form_delivery_promise
+msgid "Promise"
+msgstr "预计送达"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_tz
+msgid "Promise timezone"
+msgstr "预计送达时区"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__name
+msgid "Reason"
+msgstr "原因"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model,name:website_sale_delivery_promise.model_sale_order
+msgid "Sales Order"
+msgstr "销售订单"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_sat
+msgid "Saturday"
+msgstr "星期六"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_product_product__ships_in_days
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_product_template__ships_in_days
+msgid "Ships in (days)"
+msgstr "发货时间（天）"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_promise_enabled
+msgid "Show the delivery promise"
+msgstr "显示预计送达"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website_delivery_holiday__name
+msgid "Shown in the back end only, e.g. \"National Day\" or \"Stock count\"."
+msgstr "仅在后端显示，例如“国庆节”或“盘点”。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_sun
+msgid "Sunday"
+msgstr "星期日"
+
+#. module: website_sale_delivery_promise
+#: model:ir.module.module,summary:base.module_website_sale_delivery_promise
+msgid ""
+"Tell shoppers when the order will arrive, from the cut-off, the working "
+"week, the holidays and the destination country."
+msgstr ""
+"根据截单时间、工作周、节假日和目的地国家，\n"
+"告诉购物者订单何时送达。"
+
+#. module: website_sale_delivery_promise
+#: model_terms:ir.actions.act_window,help:website_sale_delivery_promise.action_website_delivery_country_extra
+msgid ""
+"The extra days are added on top of the preparation time of the\n"
+"               slowest item in the cart, and counted in working days."
+msgstr ""
+"额外天数加在购物车中最慢商品的备货时间之上，\n"
+"               并按工作日计算。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_thu
+msgid "Thursday"
+msgstr "星期四"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website__delivery_tz
+msgid ""
+"Timezone the cut-off is read in. A promise computed in UTC for a shop in "
+"UTC+8 is one day short for every order placed after 16:00 local."
+msgstr ""
+"读取截单时间所用的时区。对 UTC+8 的店铺用 UTC 计算预计送达，\n"
+"当地 16:00 之后下的每一单都会少一天。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_website_delivery_country_extra__extra_days
+msgid ""
+"Transit days added on top of the product preparation time for this "
+"destination. They are counted in working days, so a Saturday is never part "
+"of the three days a remote destination adds."
+msgstr ""
+"为该目的地附加在产品备货时间之上的运输天数。按工作日计算，\n"
+"因此偏远目的地增加的 3 天里绝不含星期六。"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_tue
+msgid "Tuesday"
+msgstr "星期二"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields.selection,name:website_sale_delivery_promise.selection__website__delivery_tz__utc
+msgid "UTC"
+msgstr ""
+
+#. module: website_sale_delivery_promise
+#: model:ir.model,name:website_sale_delivery_promise.model_website
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_country_extra__website_id
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website_delivery_holiday__website_id
+msgid "Website"
+msgstr "网站"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,field_description:website_sale_delivery_promise.field_website__delivery_open_wed
+msgid "Wednesday"
+msgstr "星期三"
+
+#. module: website_sale_delivery_promise
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_product_product__ships_in_days
+#: model:ir.model.fields,help:website_sale_delivery_promise.field_product_template__ships_in_days
+msgid ""
+"Working days needed to prepare this product before it leaves the warehouse. "
+"0 means it ships the same day. Leave -1 (the default) to follow the Sales "
+"Lead Time of the product; the delivery promise then moves with the lead time"
+" instead of drifting away from it."
+msgstr ""
+"该产品出库前所需的备货工作日。0 表示当天发货。保留 -1（默认值）\n"
+"则跟随产品的销售交货提前期；预计送达会随提前期变化，而不会与之脱节。"

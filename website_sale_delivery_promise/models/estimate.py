@@ -133,3 +133,15 @@ def format_countdown(minutes):
     if total >= 60:
         return '%dh %02dm' % (total // 60, total % 60)
     return '%dm' % total
+
+
+def format_countdown_seconds(seconds):
+    """``3h 12m`` / ``42m`` from a number of seconds left.
+
+    The browser ticks once a second, so the moving value is a duration in
+    seconds. Truncating to whole minutes first keeps the first paint identical
+    to ``format_countdown(cutoff - now)``; the front-end copy in
+    static/src/js/delivery_promise.js mirrors this arithmetic, which is why the
+    rounding lives here and not in the template.
+    """
+    return format_countdown(max(int(seconds), 0) // 60)

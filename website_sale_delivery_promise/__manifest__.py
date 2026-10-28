@@ -56,6 +56,7 @@ the right weekday.
     ],
     'assets': {
         'web.assets_frontend': [
+            'website_sale_delivery_promise/static/src/js/delivery_promise.js',
             'website_sale_delivery_promise/static/src/css/delivery_promise.css',
         ],
     },

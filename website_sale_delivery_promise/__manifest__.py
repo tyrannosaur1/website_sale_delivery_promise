@@ -62,6 +62,7 @@ the right weekday.
     },
     'images': [
         'static/description/screenshot_1.png',
+        'static/description/screenshot_2.png',
     ],
     'installable': True,
     'application': False,

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Website configuration and the payload every front-end block renders."""
+from datetime import timedelta
+
 import pytz
 
 from odoo import _, api, fields, models
@@ -7,16 +9,20 @@ from odoo import _, api, fields, models
 from .estimate import (
     cutoff_minutes,
     estimate_date,
-    format_countdown,
+    format_countdown_seconds,
     format_date,
     is_open_day,
-    minute_of_day,
 )
 
 # The cut-off, the working week, the holidays and the country surcharges are all
 # per website: a shop that closes on Friday evening and a shop that closes on
 # Sunday cannot share one promise.
 _TZ_SELECTION = [(name, name) for name in pytz.common_timezones]
+
+# Splits the sentence around the countdown without searching for the formatted
+# value ("2h 14m") inside translated text: the front end redraws the digits
+# between the two halves as the clock moves.
+_COUNTDOWN_MARK = '\x00'
 
 
 def _default_tz(env):
@@ -124,6 +130,19 @@ class Website(models.Model):
             moment = pytz.utc.localize(moment)
         return moment.astimezone(self._dps_timezone()).replace(tzinfo=None)
 
+    def _dps_cutoff_at(self, local):
+        """The cut-off of ``local``'s day as an absolute (UTC) instant.
+
+        ``local`` is naive wall time in the promise timezone, so the cut-off is
+        rebuilt there and only then converted: the deadline the browser counts
+        down to is an instant, not the number 14:00.
+        """
+        self.ensure_one()
+        midnight = local.replace(hour=0, minute=0, second=0, microsecond=0)
+        wall = midnight + timedelta(
+            minutes=cutoff_minutes(self.delivery_cutoff_hour))
+        return self._dps_timezone().localize(wall).astimezone(pytz.utc)
+
     # ------------------------------------------------------------------
     # Payload
     # ------------------------------------------------------------------
@@ -137,25 +156,45 @@ class Website(models.Model):
         self.ensure_one()
         if not self.delivery_promise_enabled:
             return {}
+        if now is None:
+            now = fields.Datetime.now()
+        elif now.tzinfo is not None:
+            now = now.astimezone(pytz.utc).replace(tzinfo=None)
         local = self._dps_local(now)
         work = self._dps_open_days()
         closed = self._dps_holiday_dates()
         extra = self._dps_extra_days(country)
         day = estimate_date(local, ships_in_days, self.delivery_cutoff_hour,
                             work, closed, extra)
-        left = cutoff_minutes(self.delivery_cutoff_hour) - minute_of_day(local)
-        counting = bool(left > 0 and is_open_day(local.date(), work, closed))
+        cutoff_at = self._dps_cutoff_at(local)
+        seconds = int((cutoff_at.replace(tzinfo=None) - now).total_seconds())
+        counting = bool(seconds > 0 and is_open_day(local.date(), work, closed))
         date_text = format_date(day)
+        expired_text = _('Order now, delivered by %(date)s', date=date_text)
         if counting:
-            text = _('Order within %(left)s, delivered by %(date)s',
-                     left=format_countdown(left), date=date_text)
+            countdown = format_countdown_seconds(seconds)
+            sentence = _('Order within %(left)s, delivered by %(date)s',
+                         left=_COUNTDOWN_MARK, date=date_text)
+            text_before, _mark, text_after = sentence.partition(_COUNTDOWN_MARK)
+            text = text_before + countdown + text_after
         else:
-            text = _('Order now, delivered by %(date)s', date=date_text)
+            countdown = False
+            text_before = text_after = False
+            text = expired_text
         return {
             'date': day,
             'date_text': date_text,
             'text': text,
-            'countdown': format_countdown(left) if counting else False,
+            # The countdown is redrawn in the browser: the instant it runs to
+            # and the seconds left at render time are both shipped, so the page
+            # can tick without ever trusting the visitor's clock.
+            'countdown': countdown,
+            'text_before': text_before,
+            'text_after': text_after,
+            'expired_text': expired_text,
+            'seconds': max(seconds, 0) if counting else 0,
+            'cutoff_at': cutoff_at.replace(tzinfo=None),
+            'cutoff_iso': cutoff_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'ships_in_days': max(int(ships_in_days or 0), 0),
             'extra_days': extra,
         }

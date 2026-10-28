@@ -15,6 +15,7 @@ from odoo.addons.website_sale_delivery_promise.models.estimate import (
     cutoff_minutes,
     estimate_date,
     format_countdown,
+    format_countdown_seconds,
     format_date,
     minute_of_day,
 )
@@ -135,3 +136,23 @@ class TestEstimateDate(TransactionCase):
         self.assertEqual(format_countdown(59), '59m')
         self.assertEqual(format_countdown(60), '1h 00m')
         self.assertEqual(format_countdown(-5), '0m')
+
+    def test_format_countdown_seconds(self):
+        """The browser's value, pinned: it starts from a number of seconds.
+
+        This is the same formatter the front end mirrors, so a tab that ticks
+        past the hour boundary prints "1h 59m" -> "1h 00m" -> "59m" and never
+        a leftover fraction or a negative.
+        """
+        self.assertEqual(format_countdown_seconds(2 * 3600 + 14 * 60), '2h 14m')
+        self.assertEqual(format_countdown_seconds(3599), '59m')
+        self.assertEqual(format_countdown_seconds(61), '1m')
+        self.assertEqual(format_countdown_seconds(60), '1m')
+        self.assertEqual(format_countdown_seconds(59), '0m')
+        self.assertEqual(format_countdown_seconds(0), '0m')
+        self.assertEqual(format_countdown_seconds(-1), '0m')
+        self.assertEqual(format_countdown_seconds(3660), '1h 01m')
+        # Whole minutes truncate, exactly like the server-side value the first
+        # paint is built from.
+        self.assertEqual(format_countdown_seconds(134 * 60 + 59),
+                         format_countdown(134.99))

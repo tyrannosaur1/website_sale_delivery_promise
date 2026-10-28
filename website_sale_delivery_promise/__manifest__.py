@@ -60,6 +60,9 @@ the right weekday.
             'website_sale_delivery_promise/static/src/css/delivery_promise.css',
         ],
     },
+    'images': [
+        'static/description/screenshot_1.png',
+    ],
     'installable': True,
     'application': False,
     'price': 39.0,

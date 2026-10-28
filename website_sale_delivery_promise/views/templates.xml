@@ -16,9 +16,13 @@
                  t-nocache="delivery_promise_product"
                  t-if="product._dps_promise_available()">
                 <t t-set="dps" t-value="product._dps_promise_payload()"/>
-                <p class="o_dps_text mb-0" t-if="dps">
+                <p class="o_dps_text mb-0" t-if="dps"
+                   t-att-data-dps-seconds="dps['countdown'] and dps['seconds']"
+                   t-att-data-dps-cutoff="dps['countdown'] and dps['cutoff_iso']"
+                   t-att-data-dps-expired="dps['countdown'] and dps['expired_text']">
                     <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
-                    <span t-out="dps['text']"/>
+                    <t t-if="dps['countdown']"><span class="o_dps_sentence"><t t-out="dps['text_before']"/><span class="o_dps_countdown" t-out="dps['countdown']"/><t t-out="dps['text_after']"/></span></t>
+                    <t t-else="" t-out="dps['text']"/>
                 </p>
             </div>
         </xpath>
@@ -32,7 +36,13 @@
             <t t-set="dps" t-value="website_sale_order._dps_promise_payload() if website_sale_order else {}"/>
             <div class="o_dps_promise o_dps_cart alert alert-info mt-3" t-if="dps">
                 <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
-                <span class="o_dps_text" t-out="dps['text']"/>
+                <span class="o_dps_text"
+                      t-att-data-dps-seconds="dps['countdown'] and dps['seconds']"
+                      t-att-data-dps-cutoff="dps['countdown'] and dps['cutoff_iso']"
+                      t-att-data-dps-expired="dps['countdown'] and dps['expired_text']">
+                    <t t-if="dps['countdown']"><span class="o_dps_sentence"><t t-out="dps['text_before']"/><span class="o_dps_countdown" t-out="dps['countdown']"/><t t-out="dps['text_after']"/></span></t>
+                    <t t-else="" t-out="dps['text']"/>
+                </span>
             </div>
         </xpath>
     </template>
@@ -45,7 +55,13 @@
             <t t-set="dps" t-value="website_sale_order._dps_promise_payload()"/>
             <div class="o_dps_promise o_dps_checkout alert alert-info" t-if="dps">
                 <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
-                <span class="o_dps_text" t-out="dps['text']"/>
+                <span class="o_dps_text"
+                      t-att-data-dps-seconds="dps['countdown'] and dps['seconds']"
+                      t-att-data-dps-cutoff="dps['countdown'] and dps['cutoff_iso']"
+                      t-att-data-dps-expired="dps['countdown'] and dps['expired_text']">
+                    <t t-if="dps['countdown']"><span class="o_dps_sentence"><t t-out="dps['text_before']"/><span class="o_dps_countdown" t-out="dps['countdown']"/><t t-out="dps['text_after']"/></span></t>
+                    <t t-else="" t-out="dps['text']"/>
+                </span>
             </div>
         </xpath>
     </template>

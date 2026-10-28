@@ -78,7 +78,41 @@ class TestDeliveryPromise(TransactionCase):
         product = self._product(ships_in_days=0)
         payload = product._dps_promise_payload(now=datetime(2026, 10, 26, 15, 0))
         self.assertEqual(payload['text'], 'Order now, delivered by Tue, 27 Oct')
+        self.assertEqual(payload['text'], payload['expired_text'])
         self.assertFalse(payload['countdown'])
+        self.assertFalse(payload['seconds'])
+
+    def test_payload_carries_the_absolute_cutoff(self):
+        """Two views of one deadline: the instant and the seconds left.
+
+        The browser ticks on the seconds, so both must come from the same
+        arithmetic; if they drift apart a tab can outlive the promise it shows.
+        """
+        product = self._product(ships_in_days=0)
+        payload = product._dps_promise_payload(now=datetime(2026, 10, 26, 11, 46))
+        self.assertEqual(payload['cutoff_at'], datetime(2026, 10, 26, 14, 0))
+        self.assertEqual(payload['cutoff_iso'], '2026-10-26T14:00:00Z')
+        self.assertEqual(payload['seconds'], 2 * 3600 + 14 * 60)
+        self.assertEqual(payload['countdown'], '2h 14m')
+        # The sentence before the first tick is the two halves of the sentence
+        # the browser rebuilds, glued around the same countdown.
+        self.assertEqual(payload['text_before'], 'Order within ')
+        self.assertEqual(payload['text_after'], ', delivered by Mon, 26 Oct')
+        self.assertEqual(payload['text_before'] + payload['countdown']
+                         + payload['text_after'], payload['text'])
+
+    def test_the_cutoff_instant_follows_the_website_timezone(self):
+        """13:00 wall time in UTC+8 is 05:00 UTC: the deadline is an instant.
+
+        A page counting down to the number 14:00 instead of the instant would
+        run eight hours long in this shop.
+        """
+        self.site.delivery_tz = 'Asia/Shanghai'
+        product = self._product(ships_in_days=0)
+        payload = product._dps_promise_payload(now=datetime(2026, 10, 26, 4, 0))
+        self.assertEqual(payload['cutoff_at'], datetime(2026, 10, 26, 6, 0))
+        self.assertEqual(payload['seconds'], 2 * 3600)
+        self.assertEqual(payload['countdown'], '2h 00m')
 
     def test_holiday_pushes_the_product_date(self):
         self.env['website.delivery.holiday'].create({

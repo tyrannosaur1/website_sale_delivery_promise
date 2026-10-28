@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_website_delivery_holiday_tree" model="ir.ui.view">
+        <field name="name">website.delivery.holiday.tree</field>
+        <field name="model">website.delivery.holiday</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="website_id" groups="base.group_system"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_website_delivery_holiday_form" model="ir.ui.view">
+        <field name="name">website.delivery.holiday.form</field>
+        <field name="model">website.delivery.holiday</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date"/>
+                    <field name="name"/>
+                    <field name="website_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_website_delivery_country_extra_tree" model="ir.ui.view">
+        <field name="name">website.delivery.country.extra.tree</field>
+        <field name="model">website.delivery.country.extra</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="country_id"/>
+                <field name="extra_days"/>
+                <field name="website_id" groups="base.group_system"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_website_delivery_country_extra_form" model="ir.ui.view">
+        <field name="name">website.delivery.country.extra.form</field>
+        <field name="model">website.delivery.country.extra</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="country_id"/>
+                    <field name="extra_days"/>
+                    <field name="website_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_website_delivery_holiday" model="ir.actions.act_window">
+        <field name="name">Delivery Holidays</field>
+        <field name="res_model">website.delivery.holiday</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a day the shop is closed</p>
+            <p>Holidays are skipped by the delivery promise of the website they
+               belong to, exactly like a Sunday is.</p>
+        </field>
+    </record>
+
+    <record id="action_website_delivery_country_extra" model="ir.actions.act_window">
+        <field name="name">Delivery Days per Country</field>
+        <field name="res_model">website.delivery.country.extra</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add extra transit days per country</p>
+            <p>The extra days are added on top of the preparation time of the
+               slowest item in the cart, and counted in working days.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_website_delivery_holiday" name="Delivery Holidays"
+              parent="website.menu_website_configuration"
+              action="action_website_delivery_holiday" sequence="40"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_website_delivery_country_extra" name="Delivery Days per Country"
+              parent="website.menu_website_configuration"
+              action="action_website_delivery_country_extra" sequence="41"
+              groups="base.group_system"/>
+
+</odoo>

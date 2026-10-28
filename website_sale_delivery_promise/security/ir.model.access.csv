@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_website_delivery_holiday_user,website.delivery.holiday user,model_website_delivery_holiday,base.group_user,1,0,0,0
+access_website_delivery_holiday_system,website.delivery.holiday system,model_website_delivery_holiday,base.group_system,1,1,1,1
+access_website_delivery_country_extra_user,website.delivery.country.extra user,model_website_delivery_country_extra,base.group_user,1,0,0,0
+access_website_delivery_country_extra_system,website.delivery.country.extra system,model_website_delivery_country_extra,base.group_system,1,1,1,1

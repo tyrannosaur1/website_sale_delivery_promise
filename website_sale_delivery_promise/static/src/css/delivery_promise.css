@@ -1,0 +1,17 @@
+.o_dps_promise {
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.o_dps_product .o_dps_text {
+    margin: 0.5rem 0 0;
+}
+
+.o_dps_icon {
+    margin-right: 0.35rem;
+}
+
+.o_dps_cart .o_dps_text,
+.o_dps_checkout .o_dps_text {
+    font-weight: 600;
+}

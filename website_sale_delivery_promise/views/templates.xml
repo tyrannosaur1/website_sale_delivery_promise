@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product page: the promise sits under the attribute table, next to the
+         price and the add-to-cart button, where the shipping question is asked.
+
+         The product detail section is wrapped in a cache block whose key does not
+         contain the clock, so the text would be frozen at the first render of the
+         day without t-nocache. Inside t-nocache only the template's own values are
+         available, which is why the block reads `product` rather than a variable
+         set higher up. -->
+    <template id="product_delivery_promise" inherit_id="website_sale.product"
+              name="Delivery promise">
+        <xpath expr="//div[@id='product_attributes_simple']" position="after">
+            <div class="o_dps_promise o_dps_product"
+                 t-nocache="delivery_promise_product"
+                 t-if="product._dps_promise_available()">
+                <t t-set="dps" t-value="product._dps_promise_payload()"/>
+                <p class="o_dps_text mb-0" t-if="dps">
+                    <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
+                    <span t-out="dps['text']"/>
+                </p>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Cart page: one promise for the whole basket, after the lines. The date is
+         the one of the slowest item, not the sum of the preparation times. -->
+    <template id="cart_delivery_promise" inherit_id="website_sale.cart_lines"
+              name="Cart delivery promise">
+        <xpath expr="//*[@id='cart_products']" position="after">
+            <t t-set="dps" t-value="website_sale_order._dps_promise_payload() if website_sale_order else {}"/>
+            <div class="o_dps_promise o_dps_cart alert alert-info mt-3" t-if="dps">
+                <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
+                <span class="o_dps_text" t-out="dps['text']"/>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Checkout: the same promise, above the address block of the payment step.
+         The country surcharge now applies, because the destination is known. -->
+    <template id="checkout_delivery_promise" inherit_id="website_sale.payment"
+              name="Checkout delivery promise">
+        <xpath expr="//div[@id='address_on_payment']" position="before">
+            <t t-set="dps" t-value="website_sale_order._dps_promise_payload()"/>
+            <div class="o_dps_promise o_dps_checkout alert alert-info" t-if="dps">
+                <span class="o_dps_icon" role="img" aria-label="Delivery">&#128666;</span>
+                <span class="o_dps_text" t-out="dps['text']"/>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

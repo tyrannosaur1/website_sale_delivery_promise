@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Delivery Promise for the Website</title>
+</head>
+<body>
+
+<section>
+    <h1>Delivery Promise for the Website</h1>
+    <p>
+        Shoppers hesitate when they do not know when the parcel arrives. This module
+        replaces that silence with one sentence on the product page, in the cart and
+        at checkout: <em>“Order within 3h 12m, delivered by Fri, 30 Oct”</em>.
+    </p>
+    <p>
+        The date is not a fixed text. It is computed from the shop's own calendar:
+        the daily cut-off, the days goods are prepared, the holidays the shop closes
+        on, and the extra transit days of the destination country.
+    </p>
+</section>
+
+<section>
+    <h2>Where it shows</h2>
+    <ul>
+        <li><strong>Product page</strong> — under the attributes, next to the price and
+            the add-to-cart button, where the question is actually asked.</li>
+        <li><strong>Cart</strong> — one promise for the whole basket, computed from the
+            slowest line. A same-day item and a five-day item do not add up to five
+            days: the basket leaves the warehouse when the five-day item is ready.</li>
+        <li><strong>Checkout</strong> — the same sentence above the address block. The
+            destination country is known there, so its extra days are included.</li>
+        <li><strong>Order</strong> — when the order is confirmed, the promise is written
+            on it as the commitment date, unless the merchant already set one.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>How the date is computed</h2>
+    <ol>
+        <li>The preparation time of the product, in working days. Products without
+            their own value follow the Sales Lead Time, so the promise never drifts
+            away from the lead time the rest of the company uses. Zero means “ships
+            today”.</li>
+        <li>The cut-off. Before it, preparation starts today; after it, on the next
+            working day. One minute either side of the cut-off is the difference
+            between this week and next week, so the comparison is inclusive and
+            tested to the minute.</li>
+        <li>Closed days. Saturdays and Sundays are closed by default and every day of
+            the week is a checkbox, so a shop that closes on Friday evening is one
+            tick away. Holidays are read from a list per website and skipped the same
+            way, including several consecutive days and a holiday that falls on a
+            Saturday anyway.</li>
+        <li>The destination country, when it has extra transit days. They are added
+            on top of the preparation time and walked over closed days too.</li>
+    </ol>
+</section>
+
+<section>
+    <h2>Timezone</h2>
+    <p>
+        The cut-off is read in the website's own timezone. This matters more than it
+        looks: a shop in UTC+8 whose promise is computed in UTC sees 07:30 when the
+        shop clock says 15:30, so every order placed after 16:00 local time would be
+        promised a day too early. The timezone sits next to the cut-off in the
+        website settings and defaults to the company's.
+    </p>
+</section>
+
+<section>
+    <h2>Settling the edges before your customers do</h2>
+    <ul>
+        <li>A Friday order placed after the cut-off with one preparation day lands on
+            Tuesday, not on Saturday.</li>
+        <li>31 December after the cut-off is promised in the next year, and a
+            1 January holiday moves it again.</li>
+        <li>A holiday that falls on a Saturday changes nothing, because the day was
+            already closed.</li>
+        <li>An order placed on a day the shop does not prepare starts from the next
+            open day, even if the cut-off has not passed.</li>
+        <li>A product whose preparation time is zero still ships today when the order
+            is placed before the cut-off, and tomorrow when it is not.</li>
+        <li>Turning the promise off for a website removes it everywhere: product page,
+            cart and checkout.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Setting it up</h2>
+    <ul>
+        <li><em>Website → Configuration → Settings → Delivery Promise</em>: switch the
+            promise on, set the cut-off and the timezone, tick the days goods are
+            prepared, and fill in the holidays and the per-country extra days.</li>
+        <li><em>Website → Configuration → Delivery Holidays</em> and <em>Delivery Days
+            per Country</em>: the same lists, for a longer calendar than the settings
+            form is comfortable with.</li>
+        <li><em>Product → Sales tab</em>: “Ships in (days)” next to the Sales Lead
+            Time, with −1 meaning “follow the lead time”.</li>
+    </ul>
+</section>
+
+</body>
+</html>

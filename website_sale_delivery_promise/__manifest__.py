@@ -48,7 +48,7 @@ the right weekday.
     'category': 'Website/Website',
     'depends': ['website_sale', 'stock'],
     'data': [
-        'security/ir.access.csv',
+        'security/ir.model.access.csv',
         'views/delivery_views.xml',
         'views/website_views.xml',
         'views/product_views.xml',
